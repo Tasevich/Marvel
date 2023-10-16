@@ -22,7 +22,7 @@ const useMarvelService = () => {
 
   const getComics = async (id) => {
     const res = await request(`${_apiBase}comics/${id}?${_apiKey}`);
-    return _transformCharacter(res.data.results[0]);
+    return _transformComics(res.data.results[0]);
   };
 
   const getAllComics = async (offset = _baseOffset) => {
@@ -44,13 +44,19 @@ const useMarvelService = () => {
       comics: res.comics.items,
     };
   };
-  const _transformComics = (res) => {
+  const _transformComics = (comics) => {
     return {
-      id: res.id,
-      title: res.title,
-      thumbnail: res.thumbnail.path + "." + res.thumbnail.extension,
-      price: res.prices.price,
-      wiki: res.urls[0].url,
+      id: comics.id,
+      title: comics.title,
+      description: comics.description || "There is no description",
+      pageCount: comics.pageCount
+        ? `${comics.pageCount} p.`
+        : "No information about the number of pages",
+      thumbnail: comics.thumbnail.path + "." + comics.thumbnail.extension,
+      language: comics.textObjects[0]?.language || "en-us",
+      price: comics.prices[0].price
+        ? `${comics.prices[0].price}$`
+        : "not available",
     };
   };
   return {
